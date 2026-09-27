@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<gameList>
+  <game>
+    <path>./Pioneers.sh</path>
+    <name>Pioneers</name>
+    <desc>A free, faithful clone of the Settlers of Catan board game. Trade, build, and race to 10 victory points against up to 3 AI opponents, on any of dozens of official and community map layouts. This port auto-detects the device's screen shape and lays out the board, resource panel, and chat log to actually fit it.</desc>
+    <releasedate>20200802T000000</releasedate>
+    <developer>Dave Cole and the Pioneers team</developer>
+    <publisher>Open Source</publisher>
+    <genre>Strategy</genre>
+    <image>./pioneers/screenshot.png</image>
+  </game>
+</gameList>

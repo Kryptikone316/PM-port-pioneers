@@ -1,0 +1,33 @@
+{
+    "version": 4,
+    "name": "pioneers.zip",
+    "items": [
+        "Pioneers.sh",
+        "pioneers"
+    ],
+    "items_opt": [],
+    "attr": {
+        "title": "Pioneers",
+        "porter": [
+            "AthruZ"
+        ],
+        "desc": "A free, full-featured clone of Settlers of Catan. Play a complete game against up to 3 AI opponents on a single device, with dozens of official and community map layouts.",
+        "desc_md": null,
+        "inst": "Ready to run, no additional setup required. Launching starts a local game against 3 AI opponents automatically.",
+        "inst_md": null,
+        "genres": [
+            "strategy"
+        ],
+        "image": null,
+        "rtr": true,
+        "exp": false,
+        "runtime": [],
+        "store": [],
+        "availability": "full",
+        "reqs": [],
+        "arch": [
+            "aarch64"
+        ],
+        "min_glibc": ""
+    }
+}

@@ -1,0 +1,83 @@
+Instructions to install the Testing Zip:
+Drop the .zip into your Portmaster autoinstall folder and run Portmaster.
+or
+run via ssh: harbourmaster install "zip url from discord"
+
+Game Information
+Title: Pioneers
+URL: https://sourceforge.net/projects/pio/
+
+Instructions:
+Ready to run. No additional setup required. Launching starts a local game against 3 AI opponents automatically.
+
+| Button | Action |
+|--|--|
+|D-Pad/Left Stick| Move cursor |
+|A| Left click |
+|B| Right click |
+|X (hold)| Precision cursor (half speed) |
+|Start| Enter |
+|Select/Back| Escape |
+
+CFW Tests:
+[ ] AmberELEC
+[ ] dArkOS
+[ ] MuOS
+ROCKNIX
+-> [ ] Libmali
+-> [x] Panfrost (both rk3566/X55 and rk3326/R36S confirmed, see below)
+-> [ ] Adreno (Optional)
+[ ] Knulli
+
+2026-09-26: full session from a cold start on the X55 (rk3566, 1280x720).
+GTK client + console server + AI bots all launch and stay alive, but every
+image load failed "couldn't recognize the image file format", even for a
+byte-perfect PNG header - confirmed by direct C reproduction against the
+device's own gdk-pixbuf (get_formats() correctly listed png/jpeg as
+registered, sniffing still refused them). Root cause, found by pulling this
+CFW's real gdk-pixbuf source package (Ubuntu 24.04 aarch64 chroot,
+`apt-get source gdk-pixbuf2.0`): this build's `-Dbuiltin_loaders=none`-style
+config makes every format, including PNG/JPEG, a real loadable module -
+`/usr/lib/gdk-pixbuf-2.0/2.10.0/loaders/` is confirmed non-existent on
+device, not just missing a couple of files. Fix: rebuilt gdk-pixbuf locally
+with every format as a real `.so` module and shipped png/jpeg/svg modules +
+a private `loaders.cache` (via `GDK_PIXBUF_MODULE_FILE`, which fully
+replaces the module registry - a cache listing only svg would have kept
+breaking png/jpeg even after bundling the svg loader alone).
+
+Separately, `/usr/share/mime` on this CFW ships only shared-mime-info's
+source XML packages, never run through `update-mime-database` - GIO's own
+content-type sniffing (which gdk-pixbuf's format detection also calls into)
+came back empty regardless of which loader modules were present. Fixed by
+bundling a real compiled mime database (`update-mime-database` run against
+the standard freedesktop.org.xml spec) and pointing `XDG_DATA_DIRS` at it.
+That database's own `mime.cache`/`magic` also have to live off the exFAT
+filesystem most CFWs mount `/roms` as - `GMappedFile`-based reads over
+exFAT/FUSE silently returned garbage, so both this and the bundled game
+data get copied/bind-mounted onto tmpfs rather than read in place.
+
+Confirmed end-to-end on real hardware: board/theme art, all toolbar icons
+(including the SVG ones), and the per-player AI avatar badge (the one
+asset that's colorized live from raw SVG text at runtime, so it couldn't
+be pre-baked to PNG) all render correctly. Real gameplay session played to
+completion via gptokeyb2 mouse emulation (analog stick = cursor, A = left
+click), 3 AI opponents connecting automatically via the bundled console
+server + AI binary.
+
+2026-09-26 (same session): R36S (rk3326, 640x480/1024x768 4:3) confirmed
+separately. Same build, zero binary differences - GTK's own window has no
+size ceiling under this CFW's no-window-manager DRM/Wayland session, so
+Pioneers' default 16:9 layout (chat panel beside the board) simply
+overflowed the narrow screen and clipped the sidebar. Pioneers already
+ships a 4:3-friendly layout (`settings/layout_16_9=0`, stacks chat below
+the board instead) for exactly this - the port now auto-detects the
+device's aspect ratio at first launch and seeds the right one into
+Pioneers' own GKeyFile config, so a single build serves both screen
+shapes with zero rebuild. Confirmed via screenshot on real R36S hardware:
+full toolbar, board, and chat panel all visible with zero clipping.
+
+Resolutions:
+[ ] 480x320 (Optional)
+[x] 640x480 (R36S, 4:3 layout auto-selected)
+[ ] 720x720 (RGB30) (Optional)
+[x] Higher resolutions (e.g., 1280) (X55, 1280x720, 16:9 layout auto-selected)
